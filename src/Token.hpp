@@ -1,16 +1,18 @@
 #include <string>
+#include <any>
 #include "TokenType.hpp"
 
 
-template <typename T> class Token {
+
+class Token {
     
     TokenType type_;
-    std::string lexme_;
-    T literal_;
+    std::string lexeme_;
+    std::any literal_;
     int line_;
 
     public:
-        Token(TokenType type, std::string lexeme, T literal, int line);
-        friend ostream & operator<<(ostream&out, const Token<T>& t);
+        Token(TokenType type, std::string lexeme, std::any literal, int line);
+        friend ostream & operator<<(ostream&out, const Token& t);
 
 }; //class Token<T>

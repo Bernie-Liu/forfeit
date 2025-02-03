@@ -9,6 +9,7 @@
 
 #include "TokenType.hpp"
 #include "Token.hpp"
+#include "Scanner.hpp"
 
 using namespace std;
 
@@ -73,10 +74,10 @@ void runPrompt() {
     }
 }
 
-template <typename T>
+
 void run(string source) {
-    Scanner scanner = new Scanner(source);
-    list<Token<T>> tokens = scanner.scanTokens();
+    Scanner scanner(source);
+    list<Token> tokens = scanner.scanTokens();
 
     //Temp
     for (Token token : tokens) {

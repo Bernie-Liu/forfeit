@@ -1,14 +1,14 @@
 #include <string>
-#include <vector>
+#include <list>
 #include "TokenType.hpp"
 #include "Token.hpp"
 
-template <typename T>
 class Scanner {
     private:
         std::string source_;
-        std::vector<Token> tokens_;
+        std::list<Token> tokens_;
 
+        //start_: first character of the lexeme
         int start_;
         int current_;
         int line_;
@@ -17,10 +17,12 @@ class Scanner {
 
     public:
         Scanner(std::string source);
-        vector<Token> scanTokens();
+        std::list<Token> scanTokens();
         void scanToken();
 
         char advance();
         void addToken(TokenType type);
-        void addToken(TokenType type, T literal);
+        void addToken(TokenType type, std::any literal);
+        bool match(char expected);
+        char peek();
 };
