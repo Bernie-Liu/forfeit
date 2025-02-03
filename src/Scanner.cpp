@@ -1,7 +1,7 @@
 #include <string>
 #include "Scanner.hpp"
 #include "Token.hpp"
-#include "TokenType.hpp"
+//#include "TokenType.hpp"
 #include "Forfeit.cpp"
 
 
@@ -13,6 +13,24 @@ Scanner::Scanner(std::string source){
     start_=0;
     current_=0;
     line_=1;
+
+    keywords_["and"]=TokenType::AND;
+    keywords_["class"]=TokenType::CLASS;
+    keywords_["else"]=TokenType::ELSE;
+    keywords_["false"]=TokenType::FALSE;
+    keywords_["for"]=TokenType::FOR;
+    keywords_["fun"]=TokenType::FUN;
+    keywords_["if"]=TokenType::IF;
+    keywords_["nil"]=TokenType::NIL;
+    keywords_["or"]=TokenType::OR;
+    keywords_["print"]=TokenType::PRINT;
+    keywords_["return"]=TokenType::RETURN;
+    keywords_["super"]=TokenType::SUPER;
+    keywords_["this"]=TokenType::THIS;
+    keywords_["true"]=TokenType::TRUE;
+    keywords_["var"]=TokenType::VAR;
+    keywords_["while"]=TokenType::WHILE;
+
 
 }
 
@@ -75,14 +93,57 @@ void Scanner::scanToken() {
         case '\n':
             line_++;
             break;
-            
-        default:
-            error(line_, "Unexpected character.");
+        
+        case '"':
+            string();
             break;
+
+        default:
+            if (isDigit(c)) {
+                number();
+            }
+            else{
+                error(line_, "Unexpected character.");
+                break;
+            }    
     }
 }
 
+void Scanner::identifier() {
+    while (isAlphaNumeric(peek())) {
+        advance();
+    }
 
+    std::string text=source_.substr(start_, current_-start_);
+    TokenType type=keywords_[text];
+    if (type==NULL) {
+        type=TokenType::IDENTIFIER;
+    }
+    addToken(type);
+}
+
+
+
+void Scanner::string() {
+    while (peek()!= '"' && isAtEnd()) {
+        if (peek()=='\n') {
+            line_++;
+        }
+        advance();
+    }
+
+    if (isAtEnd) {
+        error(line_, "Unterminated string.");
+    }
+
+    //closing "
+    advance();
+
+    //trim ""
+    std::string value=source_.substr(start_+1, current_-start_-1);
+
+    addToken(TokenType::STRING, value);
+}
 
 
 bool Scanner::isAtEnd() {
@@ -106,6 +167,43 @@ char Scanner::peek() {
     return source_.at(current_);
 }
 
+char Scanner::peekNext() {
+    if (current_+1>=source_.length()) {
+        return '\0';
+    }
+
+    return source_.at(current_+1);
+}
+
+bool Scanner::isAlpha(char c) {
+    return (c>='a' && c <= 'z') || (c>='A' && c<='Z') || c=='_';
+}
+
+bool Scanner::isAlphaNumeric(char c) {
+    return isAlpha(c) || isDigit(c);
+}
+
+bool Scanner::isDigit(char c) {
+    return c>='0'&& c<='9';
+}
+
+void Scanner::number() {
+    while (isDigit(peek())) {
+        advance();
+    }
+
+    if (peek()=='.' && isDigit(peekNext())) {
+        //consume .
+        advance();
+
+        while (isDigit(peek())) {
+            advance();
+        }
+    }
+
+    addToken(TokenType::NUMBER, stod(source_.substr(start_, current_-start_)));
+}
+
 //consumes the next character of the source file and returns it
 char Scanner::advance() {
     return source_.at(current_++);
@@ -116,7 +214,9 @@ void Scanner::addToken(TokenType type) {
 }
 
 void Scanner::addToken(TokenType type, std::any literal) {
-    string text=source_.substr(start_, current_-start_);
+    std::string text(source_.substr(start_, current_-start_));
+    Token token(type, text, literal, line_);
+    tokens_.push_back(token);
 }
 
 

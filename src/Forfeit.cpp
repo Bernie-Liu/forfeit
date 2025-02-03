@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <list>
 
-#include "TokenType.hpp"
+//#include "TokenType.hpp"
 #include "Token.hpp"
 #include "Scanner.hpp"
 
@@ -15,7 +15,13 @@ using namespace std;
 
 bool hadError=false;
 
-template <typename T>
+
+void runFile(string path, char** argv);
+void runPrompt();
+void run(string source);
+void error(int line, string message);
+void report (int line, string where, string message);
+
 int main (int args, char** argv) {
     //std::cout << "start" << std::endl;
     if (args >2) {
@@ -84,6 +90,7 @@ void run(string source) {
         cout << token << endl;
     }
 }
+
 
 void error(int line, string message) {
     report(line, "", message);

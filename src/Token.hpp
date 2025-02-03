@@ -1,6 +1,12 @@
+#ifndef _Token_hpp_
+#define _Token_hpp_
+
 #include <string>
 #include <any>
+#include <iostream>
 #include "TokenType.hpp"
+
+
 
 
 
@@ -13,6 +19,9 @@ class Token {
 
     public:
         Token(TokenType type, std::string lexeme, std::any literal, int line);
-        friend ostream & operator<<(ostream&out, const Token& t);
+        friend std::ostream & operator<<(std::ostream &out, const Token &t);
+
 
 }; //class Token<T>
+
+#endif // _Token_hpp_
