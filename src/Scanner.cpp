@@ -1,8 +1,8 @@
 #include <string>
 #include "Scanner.hpp"
-#include "Token.hpp"
+//#include "Token.hpp"
 //#include "TokenType.hpp"
-#include "Forfeit.cpp"
+#include "Forfeit.hpp"
 
 
 using namespace std;
@@ -32,6 +32,53 @@ Scanner::Scanner(std::string source){
     keywords_["while"]=TokenType::WHILE;
 
 
+    TokenTypes_[TokenType::LEFT_PAREN]="LEFT_PAREN";
+    TokenTypes_[TokenType::RIGHT_PAREN]="RIGHT_PAREN";
+    TokenTypes_[TokenType::LEFT_BRACE]="LEFT_BRACE";
+    TokenTypes_[TokenType::RIGHT_BRACE]="RIGHT_BRACE";
+    TokenTypes_[TokenType::COMMA]="COMMA";
+    TokenTypes_[TokenType::DOT]="DOT";
+    TokenTypes_[TokenType::MINUS]="MINUS";
+    TokenTypes_[TokenType::PLUS]="PLUS";
+    TokenTypes_[TokenType::SEMICOLON]="SEMICOLON";
+    TokenTypes_[TokenType::SLASH]="SLASH";
+    TokenTypes_[TokenType::STAR]="STAR";
+    
+    TokenTypes_[TokenType::BANG]="BANG";
+    TokenTypes_[TokenType::BANG_EQUAL]="BANG_EQUAL";
+    TokenTypes_[TokenType::EQUAL]="EQUAL";
+    TokenTypes_[TokenType::EQUAL_EQUAL]="EQUAL_EQUAL";
+    TokenTypes_[TokenType::GREATER]="GREATER";
+    TokenTypes_[TokenType::GREATER_EQUAL]="REATER_EQUAL";
+    TokenTypes_[TokenType::LESS]="LESS";
+    TokenTypes_[TokenType::LESS_EQUAL]="LESS_EQUAL";
+
+    TokenTypes_[TokenType::STRING]="STRING";
+    TokenTypes_[TokenType::NUMBER]="NUMBER";
+    TokenTypes_[TokenType::IDENTIFIER]="IDENTIFIER";
+    
+    
+    TokenTypes_[TokenType::AND]="AND";
+    TokenTypes_[TokenType::CLASS]="CLASS";
+    TokenTypes_[TokenType::ELSE]="ELSE";
+    TokenTypes_[TokenType::FALSE]="FALSE";
+    TokenTypes_[TokenType::FOR]="FOR";
+    TokenTypes_[TokenType::FUN]="FUN";
+    TokenTypes_[TokenType::IF]="IF";
+    TokenTypes_[TokenType::NIL]="NIL";
+    TokenTypes_[TokenType::OR]="OR";
+    TokenTypes_[TokenType::PRINT]="PRINT";
+    TokenTypes_[TokenType::RETURN]="RETURN";
+    TokenTypes_[TokenType::SUPER]="SUPER";
+    TokenTypes_[TokenType::THIS]="THIS";
+    TokenTypes_[TokenType::TRUE]="TRUE";
+    TokenTypes_[TokenType::VAR]="VAR";
+    TokenTypes_[TokenType::WHILE]="WHILE";
+    TokenTypes_[TokenType::END_OF_FILE]="END_OF_FILE";
+
+
+
+
 }
 
 //Add tokens from the source code until it runs out of characters
@@ -42,7 +89,7 @@ list<Token> Scanner::scanTokens() {
         scanToken();
     }
 
-    Token token(TokenType::END_OF_FILE, "", NULL, line_);
+    Token token(TokenTypes_[TokenType::END_OF_FILE], "", NULL, line_);
     tokens_.push_back(token);
     return tokens_;
 }
@@ -77,7 +124,7 @@ void Scanner::scanToken() {
         // if we find the second /, consume characters until end of line
         case '/':
             if (match('/')) {
-                while (peek()!= '\n'&& isAtEnd()) {
+                while (peek()!= '\n'&& !isAtEnd()) {
                     advance();
                 }
             }
@@ -102,6 +149,9 @@ void Scanner::scanToken() {
             if (isDigit(c)) {
                 number();
             }
+            else if (isAlpha(c)) {
+                identifier();
+            }
             else{
                 error(line_, "Unexpected character.");
                 break;
@@ -116,7 +166,7 @@ void Scanner::identifier() {
 
     std::string text=source_.substr(start_, current_-start_);
     TokenType type=keywords_[text];
-    if (type==NULL) {
+    if (0==type) {
         type=TokenType::IDENTIFIER;
     }
     addToken(type);
@@ -125,14 +175,15 @@ void Scanner::identifier() {
 
 
 void Scanner::string() {
-    while (peek()!= '"' && isAtEnd()) {
+    //cout<<peek()<<endl;
+    while (peek()!= '"' && !isAtEnd()) {
         if (peek()=='\n') {
             line_++;
         }
         advance();
     }
 
-    if (isAtEnd) {
+    if (isAtEnd()) {
         error(line_, "Unterminated string.");
     }
 
@@ -140,19 +191,18 @@ void Scanner::string() {
     advance();
 
     //trim ""
-    std::string value=source_.substr(start_+1, current_-start_-1);
+    std::string value=source_.substr(start_+1, current_-start_-2);
 
     addToken(TokenType::STRING, value);
 }
 
 
 bool Scanner::isAtEnd() {
-    return current_>=source_.length();
+    return current_>=(int)source_.size();
 }
 
 //consumes current character if it's what we're looking for
 bool Scanner::match(char expected) {
-    bool temp=isAtEnd();
     if (isAtEnd()) return false;
     if (source_.at(current_)!=expected) return false;
 
@@ -168,7 +218,7 @@ char Scanner::peek() {
 }
 
 char Scanner::peekNext() {
-    if (current_+1>=source_.length()) {
+    if (current_+1>=(int)source_.length()) {
         return '\0';
     }
 
@@ -215,7 +265,7 @@ void Scanner::addToken(TokenType type) {
 
 void Scanner::addToken(TokenType type, std::any literal) {
     std::string text(source_.substr(start_, current_-start_));
-    Token token(type, text, literal, line_);
+    Token token(TokenTypes_[type], text, literal, line_);
     tokens_.push_back(token);
 }
 

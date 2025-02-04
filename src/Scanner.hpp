@@ -1,3 +1,6 @@
+#ifndef SCANNER_HPP
+#define SCANNER_HPP
+
 #include <string>
 #include <list>
 #include <unordered_map>
@@ -14,8 +17,10 @@ class Scanner {
         int current_;
         int line_;
 
+        std::unordered_map<int, std::string> TokenTypes_;
         std::unordered_map<std::string, TokenType> keywords_;
-
+        
+        
 
         bool isAtEnd();
         bool match(char expected);
@@ -38,3 +43,8 @@ class Scanner {
         void addToken(TokenType type, std::any literal);
         
 };
+
+
+
+
+#endif // SCANNER_HPP

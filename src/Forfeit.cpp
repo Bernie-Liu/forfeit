@@ -10,6 +10,8 @@
 //#include "TokenType.hpp"
 #include "Token.hpp"
 #include "Scanner.hpp"
+#include "Forfeit.hpp"
+
 
 using namespace std;
 
@@ -23,7 +25,8 @@ void error(int line, string message);
 void report (int line, string where, string message);
 
 int main (int args, char** argv) {
-    //std::cout << "start" << std::endl;
+    
+    //std::cout <<args<<std::endl;
     if (args >2) {
         std::cout << "Usage: Forfeit [script]" << std::endl;
         return 1;
@@ -43,22 +46,13 @@ int main (int args, char** argv) {
 
 void runFile(string path, char** argv) {
 
-    /*ifstream ifs(path, ios::binary|ios::ate);
-    ifstream::pos_type pos=ifs.tellg();
-    std::vector<char> result(pos);
-
-    ifs.seekg(0, ios::beg);
-    ifs.read(&result[0], pos);*/
-
     ifstream input(argv[1]);
     stringstream buffer;
     buffer << input.rdbuf();
     string content=buffer.str();
 
 
-    auto run(content);
-
-    
+    run(content);
 
 };
 
@@ -72,7 +66,7 @@ void runPrompt() {
         if (cin.eof()) {
             break;
         }
-        auto run(line);
+        run(line);
         if (hadError) {
             break;
         }

@@ -12,13 +12,13 @@
 
 class Token {
     
-    TokenType type_;
+    std::string type_;
     std::string lexeme_;
     std::any literal_;
     int line_;
 
     public:
-        Token(TokenType type, std::string lexeme, std::any literal, int line);
+        Token(std::string type, std::string lexeme, std::any literal, int line);
         friend std::ostream & operator<<(std::ostream &out, const Token &t);
 
 
