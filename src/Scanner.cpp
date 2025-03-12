@@ -95,7 +95,7 @@ list<Token> Scanner::scanTokens() {
 }
 
 void Scanner::scanToken() {
-
+    
     char c = advance();
     switch (c) {
         case '(': addToken(TokenType::LEFT_PAREN); break;
