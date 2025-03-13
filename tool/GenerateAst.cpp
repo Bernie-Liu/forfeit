@@ -20,18 +20,20 @@ int main(int args, char** argv) {
     string outputDir=argv[1];
     
     
-
-    defineAst(outputDir, "Expr", list<string> {"Binary   : Expr left, Token operator, Expr right",
+    //op=operator
+    defineAst(outputDir, "Expr", list<string> {"Binary   : Expr left, Token op, Expr right",
       "Grouping : Expr expression",
-      "Literal  : Object value",
-      "Unary    : Token operator, Expr right"});
+      "Literal  : any value",
+      "Unary    : Token op, Expr right"});
 }
 
 void defineAst (string outputDir, string baseName, list<string> types) {
     string path = outputDir + "/" + baseName +".cpp";
 
     ofstream writer(path);
-    writer << "#include \"Token.hpp\""<<endl<<endl;;
+    writer << "#include <any>"<<endl;
+    writer << "#include \"Token.hpp\""<<endl;
+    writer << "using namespace std;"<<endl<<endl;
     writer << "class "+ baseName +"{"<<endl;
     writer << "public:"<<endl;
 

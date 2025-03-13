@@ -19,6 +19,7 @@ class Token {
 
     public:
         Token(std::string type, std::string lexeme, std::any literal, int line);
+        Token();
         friend std::ostream & operator<<(std::ostream &out, const Token &t);
 
 
