@@ -34,6 +34,9 @@ void defineAst (string outputDir, string baseName, list<string> types) {
     writer << "#include \"Token.hpp\""<<endl<<endl;;
     writer << "class "+ baseName +"{"<<endl;
     writer << "public:"<<endl;
+
+
+    writer << "};"<<endl<<endl;
     
     //AST classes
     for (string type : types) {
@@ -43,26 +46,23 @@ void defineAst (string outputDir, string baseName, list<string> types) {
         string fields=trim(vec[1]);
         defineType(writer, baseName, className, fields);
     }
-
-    writer << "};"<<endl;
     writer.close();
+    
 }
 
 void defineType(ofstream& writer, string baseName, string className, string fieldList) {
-    writer << "    class  " + className + " : public "+ baseName + "{"<<endl;
-    writer << "    public:"<<endl;
+    writer << "class  " + className + " : public "+ baseName + "{"<<endl;
+    writer << "public:"<<endl;
 
     vector<string> fields=split(fieldList, ", ");
 
     for (string field : fields) {
-        //string type=split(field, " ")[0];
-        //string name = split(field, " ")[1];
-        writer << "      "+field+";"<<endl;
+        writer << "  "+field+"_;"<<endl;
     }
 
     //constructor
 
-    writer << "      " + className+ "("+fieldList+") {"<<endl;
+    writer << "  " + className+ "("+fieldList+") {"<<endl;
 
     //Store parameters in fields
     
@@ -70,10 +70,10 @@ void defineType(ofstream& writer, string baseName, string className, string fiel
 
     for (string field : fields) {
         string name = split(field, " ")[1];
-        writer << "        this->"+name+" = "+name+";"<<endl;
+        writer << "    this->"+name+"_ = "+name+";"<<endl;
     }
-    writer<<"      }"<<endl;
-    writer<<"    };"<<endl;
+    writer<<"  }"<<endl;
+    writer<<"};"<<endl<<endl;
     
     
 
