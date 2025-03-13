@@ -1,4 +1,6 @@
+#include <any>
 #include "Token.hpp"
+using namespace std;
 
 class Expr{
 public:
@@ -7,11 +9,11 @@ public:
 class  Binary : public Expr{
 public:
   Expr left_;
-  Token operator_;
+  Token op_;
   Expr right_;
-  Binary(Expr left, Token operator, Expr right) {
+  Binary(Expr left, Token op, Expr right) {
     this->left_ = left;
-    this->operator_ = operator;
+    this->op_ = op;
     this->right_ = right;
   }
 };
@@ -26,18 +28,18 @@ public:
 
 class  Literal : public Expr{
 public:
-  Object value_;
-  Literal(Object value) {
+  any value_;
+  Literal(any value) {
     this->value_ = value;
   }
 };
 
 class  Unary : public Expr{
 public:
-  Token operator_;
+  Token op_;
   Expr right_;
-  Unary(Token operator, Expr right) {
-    this->operator_ = operator;
+  Unary(Token op, Expr right) {
+    this->op_ = op;
     this->right_ = right;
   }
 };
