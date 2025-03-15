@@ -54,7 +54,7 @@ void defineAst (string outputDir, string baseName, list<string> types) {
 
     //base accept()
     writer <<endl;
-    writer << "    virtual R accept(Visitor<R> visitor)" <<endl;
+    
 
 
     writer.close();
@@ -85,10 +85,11 @@ void defineType(ofstream& writer, string baseName, string className, string fiel
     writer<<"    }"<<endl;
 
     //visitor pattern
+    writer << "    template <typename R>"<<endl;
     writer << "    R accept(Visitor<R> visitor){"<<endl;
     writer << "        return visitor.visit"+className+baseName+"(*this);"<<endl;
     writer << "    }"<<endl;
-    
+
     writer<<"};"<<endl<<endl;
     
     
@@ -99,15 +100,16 @@ void defineType(ofstream& writer, string baseName, string className, string fiel
 
 void defineVisitor(ofstream& writer, string baseName, list<string> types){
     writer << "    template <typename R>"<<endl;
-    writer << "    class Visitor<R> {"<<endl;
+    writer << "    class Visitor {"<<endl;
     for (string type : types) {
         string typeName=trim(split(type, ":")[0]);
         string temp=baseName;
         transform(temp.begin(), temp.end(), temp.begin(), ::tolower); //lowercase
         writer << "        virtual R visit"+typeName+baseName+"("+typeName+" "+ temp+") = 0;"<<endl;
     }
+    writer << "        virtual R accept(Visitor<R> visitor);" <<endl;
 
-    writer<< "    }"<<endl;
+    writer<< "    };"<<endl;
 }
 
 string trim(string& str) {
