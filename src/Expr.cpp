@@ -4,43 +4,64 @@ using namespace std;
 
 class Expr{
 public:
+    template <typename R>
+    class Visitor<R> {
+        virtual R visitBinaryExpr(Binary expr) = 0;
+        virtual R visitGroupingExpr(Grouping expr) = 0;
+        virtual R visitLiteralExpr(Literal expr) = 0;
+        virtual R visitUnaryExpr(Unary expr) = 0;
+    }
 };
 
-class  Binary : public Expr{
+class Binary : public Expr{
 public:
-  Expr left_;
-  Token op_;
-  Expr right_;
-  Binary(Expr left, Token op, Expr right) {
-    this->left_ = left;
-    this->op_ = op;
-    this->right_ = right;
-  }
+    Expr left_;
+    Token op_;
+    Expr right_;
+    Binary(Expr left, Token op, Expr right) {
+        this->left_ = left;
+        this->op_ = op;
+        this->right_ = right;
+    }
 };
 
-class  Grouping : public Expr{
+    R accept(Visitor<R> visitor){
+        return visitor.visitBinaryExpr(*this);
+    }
+class Grouping : public Expr{
 public:
-  Expr expression_;
-  Grouping(Expr expression) {
-    this->expression_ = expression;
-  }
+    Expr expression_;
+    Grouping(Expr expression) {
+        this->expression_ = expression;
+    }
 };
 
-class  Literal : public Expr{
+    R accept(Visitor<R> visitor){
+        return visitor.visitGroupingExpr(*this);
+    }
+class Literal : public Expr{
 public:
-  any value_;
-  Literal(any value) {
-    this->value_ = value;
-  }
+    any value_;
+    Literal(any value) {
+        this->value_ = value;
+    }
 };
 
-class  Unary : public Expr{
+    R accept(Visitor<R> visitor){
+        return visitor.visitLiteralExpr(*this);
+    }
+class Unary : public Expr{
 public:
-  Token op_;
-  Expr right_;
-  Unary(Token op, Expr right) {
-    this->op_ = op;
-    this->right_ = right;
-  }
+    Token op_;
+    Expr right_;
+    Unary(Token op, Expr right) {
+        this->op_ = op;
+        this->right_ = right;
+    }
 };
 
+    R accept(Visitor<R> visitor){
+        return visitor.visitUnaryExpr(*this);
+    }
+
+    virtual R accept(Visitor<R> visitor)

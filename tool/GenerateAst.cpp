@@ -11,6 +11,7 @@ void defineAst (string outputDir, string baseName, list<string> types);
 string trim (string& str);
 void defineType(ofstream& writer, string baseName, string className, string fieldList);
 vector<string> split(string&str, const string& del);
+void defineVisitor(ofstream& writer, string baseName, list<string> types);
 
 int main(int args, char** argv) {
     if (args !=2) {
@@ -34,8 +35,10 @@ void defineAst (string outputDir, string baseName, list<string> types) {
     writer << "#include <any>"<<endl;
     writer << "#include \"Token.hpp\""<<endl;
     writer << "using namespace std;"<<endl<<endl;
+
     writer << "class "+ baseName +"{"<<endl;
     writer << "public:"<<endl;
+    defineVisitor(writer, baseName, types);
 
 
     writer << "};"<<endl<<endl;
@@ -48,39 +51,63 @@ void defineAst (string outputDir, string baseName, list<string> types) {
         string fields=trim(vec[1]);
         defineType(writer, baseName, className, fields);
     }
+
+    //base accept()
+    writer <<endl;
+    writer << "    virtual R accept(Visitor<R> visitor)" <<endl;
+
+
     writer.close();
     
 }
 
 void defineType(ofstream& writer, string baseName, string className, string fieldList) {
-    writer << "class  " + className + " : public "+ baseName + "{"<<endl;
+    writer << "class " + className + " : public "+ baseName + "{"<<endl;
     writer << "public:"<<endl;
 
     vector<string> fields=split(fieldList, ", ");
 
+    //fields
     for (string field : fields) {
-        writer << "  "+field+"_;"<<endl;
+        writer << "    "+field+"_;"<<endl;
     }
 
     //constructor
 
-    writer << "  " + className+ "("+fieldList+") {"<<endl;
+    writer << "    " + className+ "("+fieldList+") {"<<endl;
 
     //Store parameters in fields
-    
-    
 
     for (string field : fields) {
         string name = split(field, " ")[1];
-        writer << "    this->"+name+"_ = "+name+";"<<endl;
+        writer << "        this->"+name+"_ = "+name+";"<<endl;
     }
-    writer<<"  }"<<endl;
+    writer<<"    }"<<endl;
+
+    //visitor pattern
+    writer << "    R accept(Visitor<R> visitor){"<<endl;
+    writer << "        return visitor.visit"+className+baseName+"(*this);"<<endl;
+    writer << "    }"<<endl;
+    
     writer<<"};"<<endl<<endl;
     
     
 
     
     
+}
+
+void defineVisitor(ofstream& writer, string baseName, list<string> types){
+    writer << "    template <typename R>"<<endl;
+    writer << "    class Visitor<R> {"<<endl;
+    for (string type : types) {
+        string typeName=trim(split(type, ":")[0]);
+        string temp=baseName;
+        transform(temp.begin(), temp.end(), temp.begin(), ::tolower); //lowercase
+        writer << "        virtual R visit"+typeName+baseName+"("+typeName+" "+ temp+") = 0;"<<endl;
+    }
+
+    writer<< "    }"<<endl;
 }
 
 string trim(string& str) {
